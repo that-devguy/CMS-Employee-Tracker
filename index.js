@@ -2,32 +2,29 @@ const inquirer = require('inquirer');
 const {queryDepartment, queryRoles, queryEmployees, newDepartment} = require('./db/queries.js')
 
 
-// First prompt for asking the user what they'd like to do
-const questions = [
-    {
+// mainMenu prompt for asking the user what they'd like to do
+const questions = {
         type: 'list',
         message: 'What would you like to do?',
         name: 'mainMenu',
         choices: [
             {name: 'View All Departments', value: 'View All Departments'},
             {name: 'View All Roles', value: 'View All Roles'}, 
-            // 'View All Employees', 
-            // 'Add a Department', 
-            // 'Add a Role', 
-            // 'Add an Employee', 
-            // 'Update an Employee Role', 
-            // 'Exit'
+            {name: 'View All Employees', value: 'View All Employees'}, 
+            {name: 'Add a Department', value: 'Add a Department'},
+            {name: 'Add a Role', value: 'Add a Role'},
+            {name: 'Add an Employee', value: 'Add an Employee'},
+            {name: 'Update an Employee Role', value: 'Update an Employee Role'},
+            {name: 'Exit', value: 'Exit' }
         ],
     }
-]
-runPrompt();
+
 
 // Function to activate the functions for each activity
 function runPrompt() {
     inquirer.prompt(questions).then(
         response => {
             const selectedOption = response.mainMenu;
-            console.log(selectedOption);
 
             switch (selectedOption) {
                 case 'View All Departments':
@@ -36,55 +33,62 @@ function runPrompt() {
                 case 'View All Roles':
                     viewRoles()
                     break;
+                case 'View All Employees':
+                    viewEmployees()
+                    break;
+                case 'Add a Department':
+                    addDepartment()
+                    break;
+                case 'Add a Role':
+                    addRole()
+                    break;
+                case 'Add an Employee':
+                    addEmployee()
+                    break;
+                case 'Updated an Employee Role':
+                    updateEmployeeRole()
+                    break;
+                case 'Exit':
+                    console.log('Exiting...\n')
+                    process.exit();
             }
-            // if (selectedOption === 'View All Departments') {
-            //     viewDepartments()
-            //     return
-            // } else if (selectedOption === 'View All Roles') {
-            //     viewRoles()
-            // } else if (selectedOption === 'View All Employees') {
-            //     viewEmployees()
-            // } else if (selectedOption === 'Add a Department') {
-            //     addDepartment()
-            // } else if (selectedOption === 'Add a Role') {
-            //     addRole()
-            // } else if (selectedOption === 'Add an Employee') {
-            //     addEmployee()
-            // } else if (selectedOption === 'Update an Employee Role') {
-            //     updateEmployeeRole()
-            // } else if (selectedOption === 'Exit') {
-            //     console.log('Exiting...')
-            //     process.exit();
-            // }
         }
     )  
 }
 
-async function viewDepartments() {
-    await queryDepartment()
-    runPrompt()
+// .then function to display table & repeat prompt recomended by Slavic Andreev
+function viewDepartments() {
+    queryDepartment().then (
+        function(res) {
+            console.log("")
+            console.table(res[0])
+            runPrompt();
+        }
+    )
 }
 
 function viewRoles() {
-    queryRoles()
+    queryRoles().then (
+        function(res) {
+            console.log("")
+            console.table(res[0])
+            runPrompt();
+        } 
+    )
 }
 
 function viewEmployees() {
-    queryEmployees()
+    queryEmployees().then (
+        function(res) {
+            console.log("")
+            console.table(res[0])
+            runPrompt();
+        } 
+    )
 }
 
 function addDepartment() {
-    inquirer.prompt(
-        {
-            type: 'input',
-            message: 'What is the name of the department?',
-            name: 'newDepartment',
-            validate: (value) => { if (value) { return true; } else { return "Please enter the name of the department."; } }
-        }
-    ).then((answer) => {
-        newDepartment(answer.newDepartment);
-        runPrompt();
-    });
+
 }
 
 function addRole() {
@@ -98,3 +102,5 @@ function addEmployee() {
 function updateEmployeeRole() {
 
 }
+
+runPrompt();
