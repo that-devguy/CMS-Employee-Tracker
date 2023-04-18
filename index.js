@@ -108,50 +108,112 @@ function addDepartment() {
 }
 
 function addRole() {
-    queryDepartment().then(function (res) {
-        // creates an array of objects to use in the prompt
-        const departmentChoice = res[0].map(function (department) {
-            return {
-                name: department.title,
-                value: department.id
-            }
-        }
-    )
-    inquirer.prompt([
+  queryDepartment().then(function (res) {
+    // creates an array of objects to use in the prompt
+    const departmentChoice = res[0].map(function (department) {
+      return {
+        name: department.title,
+        value: department.id,
+      };
+    });
+    inquirer
+      .prompt([
         {
-            type: 'input',
-            name: 'title',
-            message: 'What is the name of the role?',
+          type: "input",
+          name: "title",
+          message: "What is the name of the role?",
         },
         {
-            type: 'input',
-            name: 'salary',
-            message: 'What is the salary of the role?',
+          type: "input",
+          name: "salary",
+          message: "What is the salary of the role?",
         },
         {
-            type: 'list',
-            name: 'departmentId',
-            message: 'Which department does the role belong to?',
-            choices: departmentChoice,
-        }
-    ]).then(function (res) {
+          type: "list",
+          name: "departmentId",
+          message: "Which department does the role belong to?",
+          choices: departmentChoice,
+        },
+      ])
+      .then(function (res) {
         const title = res.title;
         const salary = res.salary;
         const departmentId = res.departmentId;
         newRole(title, salary, departmentId)
-            .then(function(){
-                console.log(`Added ${title} to the database\n`);
-                runPrompt();
-            })
-            .catch(function(err) {
-                console.log(`Error adding ${title} to the database: ${err}\n`);
-                runPrompt();
-            })
-        })
-    })
+          .then(function () {
+            console.log(`Added ${title} to the database\n`);
+            runPrompt();
+          })
+          .catch(function (err) {
+            console.log(`Error adding ${title} to the database: ${err}\n`);
+            runPrompt();
+          });
+      });
+  });
 }
 
-function addEmployee() {}
+function addEmployee() {
+  Promise.all([queryRoles(), queryEmployees()]).then(function (res) {
+    const roleChoice = res[0][0].map(function (roles) {
+      return {
+        name: roles.title,
+        value: roles.id,
+      };
+    });
+    // console.log(roleChoice);
+
+    const managerChoice = res[1][0].map(function (employees) {
+      return {
+        name: employees.first_name + " " + employees.last_name,
+        value: employees.id,
+      };
+    });
+    managerChoice.unshift({ name: "None", value: null });
+    // console.log(managerChoice);
+    inquirer
+      .prompt([
+        {
+          type: "input",
+          name: "firstName",
+          message: "What is the employee's first name?",
+        },
+        {
+          type: "input",
+          name: "lastName",
+          message: "What is the employee's last name?",
+        },
+        {
+          type: "list",
+          name: "roleId",
+          message: "What is the employee's role?",
+          choices: roleChoice,
+        },
+        {
+          type: "list",
+          name: "managerId",
+          message: "Who is the employee's manager?",
+          choices: managerChoice,
+        },
+      ])
+      .then(function (res) {
+        const firstName = res.firstName;
+        const lastName = res.lastName;
+        const roleId = res.roleId;
+        const managerId = res.managerId;
+        newEmployee(firstName, lastName, roleId, managerId)
+          .then(function () {
+            console.log(`Added ${firstName} ${lastName} to the database\n`);
+            runPrompt();
+          })
+          .catch(function (err) {
+            console.log(
+              `Error adding ${firstName} ${lastName} to the database: ${err}\n`
+            );
+            runPrompt();
+          });
+      });
+  });
+}
 
 function updateEmployeeRole() {}
 
