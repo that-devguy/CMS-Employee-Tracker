@@ -6,6 +6,7 @@ const {
   newDepartment,
   newRole,
   newEmployee,
+  updateEmployee,
 } = require("./db/queries.js");
 
 // mainMenu prompt for asking the user what they'd like to do
@@ -49,7 +50,7 @@ function runPrompt() {
       case "Add an Employee":
         addEmployee();
         break;
-      case "Updated an Employee Role":
+      case "Update an Employee Role":
         updateEmployeeRole();
         break;
       case "Exit":
@@ -109,13 +110,14 @@ function addDepartment() {
 
 function addRole() {
   queryDepartment().then(function (res) {
-    // creates an array of objects to use in the prompt
+    // Gets the list of departments from the database
     const departmentChoice = res[0].map(function (department) {
       return {
         name: department.title,
         value: department.id,
       };
     });
+    // Prompt the user to input the role's name, input a salary and select the role's department
     inquirer
       .prompt([
         {
@@ -153,7 +155,9 @@ function addRole() {
 }
 
 function addEmployee() {
+  // Get the list of employees and roles from the database
   Promise.all([queryRoles(), queryEmployees()]).then(function (res) {
+    // Create a list of roles to choose from
     const roleChoice = res[0][0].map(function (roles) {
       return {
         name: roles.title,
@@ -161,7 +165,7 @@ function addEmployee() {
       };
     });
     // console.log(roleChoice);
-
+    // Create a list of employees to choose from
     const managerChoice = res[1][0].map(function (employees) {
       return {
         name: employees.first_name + " " + employees.last_name,
@@ -170,6 +174,7 @@ function addEmployee() {
     });
     managerChoice.unshift({ name: "None", value: null });
     // console.log(managerChoice);
+    // Prompt the user to input the employees name, select a role and select the employees manager
     inquirer
       .prompt([
         {
@@ -200,6 +205,7 @@ function addEmployee() {
         const lastName = res.lastName;
         const roleId = res.roleId;
         const managerId = res.managerId;
+        // Adds the employee to the list of employees
         newEmployee(firstName, lastName, roleId, managerId)
           .then(function () {
             console.log(`Added ${firstName} ${lastName} to the database\n`);
@@ -215,6 +221,57 @@ function addEmployee() {
   });
 }
 
-function updateEmployeeRole() {}
+function updateEmployeeRole() {
+  // Get the list of employees and roles from the database
+  Promise.all([queryEmployees(), queryRoles()]).then(function (res) {
+    // Create a list of employees to choose from
+    const employeeChoice = res[0][0].map(function (employee) {
+      return {
+        name: `${employee.first_name} ${employee.last_name}`,
+        value: employee.id,
+      };
+    });
+
+    // Create a list of roles to choose from
+    const roleChoice = res[1][0].map(function (role) {
+      return {
+        name: role.title,
+        value: role.id,
+      };
+    });
+
+    // Prompt the user to select an employee and a new role
+    inquirer
+      .prompt([
+        {
+          type: "list",
+          name: "employeeId",
+          message: "Which employee do you want to update?",
+          choices: employeeChoice,
+        },
+        {
+          type: "list",
+          name: "roleId",
+          message: "What is the employee's new role?",
+          choices: roleChoice,
+        },
+      ])
+      .then(function (res) {
+        const roleId = res.roleId;
+        const employeeId = res.employeeId;
+        // Update the employee's role in the database
+        updateEmployee(employeeId, roleId)
+          .then(function () {
+            console.log(`Updated employee role in the database\n`);
+            runPrompt();
+          })
+          .catch(function (err) {
+            console.log(`Error updating employee role: ${err}\n`
+            );
+            runPrompt();
+          });
+      });
+  });
+}
 
 runPrompt();

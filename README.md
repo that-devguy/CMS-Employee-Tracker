@@ -34,7 +34,20 @@ Please follow these steps to install and run the project on your local machine:
   
 To use this project, follow these steps:
 
-Usage instructions coming in a future update.
+1. Clone this repository to your local machine
+2. Follow the installation instructions in the README
+3. Start the application by running `node index` in your terminal
+4. Navigate the main menu using your arrow keys
+5. Select "Exit" to end the application
+
+![Main Menu Demo Image](/assets/images/main-menu-demo.JPG)
+> **Note**: Example terminal that shows the main menu once you run the application
+
+![Database Tables Demo Image](/assets/images/view-all-x-demo.JPG)
+> **Note**: Example of View All Departments, View All Roles, and View All Employees options
+
+![New Employee Demo Image](/assets/images/inquirer-prompts-demo.JPG)
+> **Note**: Example terminal displaying the Add an Employee prompts and the outcome of the database
 
 ## Contributing
 
@@ -48,7 +61,7 @@ Testing instructions coming in a future update.
   
 ## Project Links
   
-Walkthrough Demo:
+Walkthrough Demo: https://drive.google.com/file/d/1P1zHUDx8__jr1lUR4Nc859xTocs8ZN_Z/view?usp=share_link
 
 Github Repository: https://github.com/that-devguy/CMS-Employee-Tracker
 
