@@ -46,7 +46,7 @@ To use this project, follow these steps:
 ![Database Tables Demo Image](/assets/images/view-all-x-demo.JPG)
 > **Note**: Example of View All Departments, View All Roles, and View All Employees options
 
-![New Employee Demo Image](/assets/images/inquirer-prompts-demo.JPG)
+![New Employee Demo Image](/assets/images/newEmployee-demo.JPG)
 > **Note**: Example terminal displaying the Add an Employee prompts and the outcome of the database
 
 ## Contributing
